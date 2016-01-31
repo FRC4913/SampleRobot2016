@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4913.robot;
 
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -16,13 +17,21 @@ public class Robot extends IterativeRobot {
 	RobotDrive myRobot;
 	Joystick stick;
 	int autoLoopCounter;
+	CANTalon rightFront;
+	CANTalon rightBack;
+	CANTalon leftBack;
+	CANTalon leftFront;
 	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-    	myRobot = new RobotDrive(0,1);
+    	rightFront = new CANTalon(1);
+        rightBack = new CANTalon(2);
+        leftBack = new CANTalon(3);
+        leftFront = new CANTalon(4);
+        myRobot = new RobotDrive(leftFront, leftBack, rightFront, rightBack);
     	stick = new Joystick(0);
     }
     
