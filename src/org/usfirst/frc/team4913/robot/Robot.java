@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4913.robot;
 
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -16,54 +17,61 @@ public class Robot extends IterativeRobot {
 	RobotDrive myRobot;
 	Joystick stick;
 	int autoLoopCounter;
-	
-    /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
-     */
-    public void robotInit() {
-    	myRobot = new RobotDrive(0,1);
-    	stick = new Joystick(0);
-    }
-    
-    /**
-     * This function is run once each time the robot enters autonomous mode
-     */
-    public void autonomousInit() {
-    	autoLoopCounter = 0;
-    }
+	CANTalon rightFront, leftFront, rightBack, leftBack;
 
-    /**
-     * This function is called periodically during autonomous
-     */
-    public void autonomousPeriodic() {
-    	if(autoLoopCounter < 100) //Check if we've completed 100 loops (approximately 2 seconds)
+	/**
+	 * This function is run when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
+	public void robotInit() {
+		stick = new Joystick(0);
+		rightFront = new CANTalon(1);
+		rightBack = new CANTalon(2);
+		leftBack = new CANTalon(3);
+		leftFront = new CANTalon(4);
+		myRobot = new RobotDrive(leftFront, leftBack, rightFront, rightBack);
+	}
+
+	/**
+	 * This function is run once each time the robot enters autonomous mode
+	 */
+	public void autonomousInit() {
+		autoLoopCounter = 0;
+	}
+
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	public void autonomousPeriodic() {
+		if (autoLoopCounter < 100) // Check if we've completed 100 loops
+									// (approximately 2 seconds)
 		{
-			myRobot.drive(-0.5, 0.0); 	// drive forwards half speed
+			myRobot.drive(-0.5, 0.0); // drive forwards half speed
 			autoLoopCounter++;
-			} else {
-			myRobot.drive(0.0, 0.0); 	// stop robot
+		} else {
+			myRobot.drive(0.0, 0.0); // stop robot
 		}
-    }
-    
-    /**
-     * This function is called once each time the robot enters tele-operated mode
-     */
-    public void teleopInit(){
-    }
+	}
 
-    /**
-     * This function is called periodically during operator control
-     */
-    public void teleopPeriodic() {
-        myRobot.arcadeDrive(stick);
-    }
-    
-    /**
-     * This function is called periodically during test mode
-     */
-    public void testPeriodic() {
-    	LiveWindow.run();
-    }
-    
+	/**
+	 * This function is called once each time the robot enters tele-operated
+	 * mode
+	 */
+	public void teleopInit() {
+	}
+
+	/**
+	 * This function is called periodically during operator control
+	 */
+	public void teleopPeriodic() {
+		myRobot.arcadeDrive(stick);
+	}
+
+	/**
+	 * This function is called periodically during test mode
+	 */
+	public void testPeriodic() {
+		LiveWindow.run();
+	}
+
 }
