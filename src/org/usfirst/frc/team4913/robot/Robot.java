@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
@@ -17,7 +18,12 @@ public class Robot extends IterativeRobot {
 	RobotDrive myRobot;
 	Joystick stick;
 	int autoLoopCounter;
-	CANTalon rightFront, leftFront, rightBack, leftBack;
+	CANTalon frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor;
+
+	private static final int FRONT_LEFT = 4;
+	private static final int REAR_LEFT = 3;
+	private static final int FRONT_RIGHT = 1;
+	private static final int REAR_RIGHT = 2;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -25,11 +31,17 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		stick = new Joystick(0);
-		rightFront = new CANTalon(1);
-		rightBack = new CANTalon(2);
-		leftBack = new CANTalon(3);
-		leftFront = new CANTalon(4);
-		myRobot = new RobotDrive(leftFront, leftBack, rightFront, rightBack);
+		frontLeftMotor = new CANTalon(FRONT_LEFT);
+		rearLeftMotor = new CANTalon(REAR_LEFT);
+		frontRightMotor = new CANTalon(FRONT_RIGHT);
+		rearRightMotor = new CANTalon(REAR_RIGHT);
+
+		rearLeftMotor.changeControlMode(TalonControlMode.Follower);
+		rearRightMotor.changeControlMode(TalonControlMode.Follower);
+		rearLeftMotor.set(FRONT_LEFT);
+		rearRightMotor.set(FRONT_RIGHT);
+
+		myRobot = new RobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 	}
 
 	/**
