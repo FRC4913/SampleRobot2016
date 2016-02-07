@@ -24,12 +24,15 @@ public class Robot extends IterativeRobot {
 	private static final int REAR_LEFT = 3;
 	private static final int FRONT_RIGHT = 1;
 	private static final int REAR_RIGHT = 2;
+        
+        Arm arm;
 
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
+                arm = new Arm(0, 1, 5);
 		stick = new Joystick(0);
 		frontLeftMotor = new CANTalon(FRONT_LEFT);
 		rearLeftMotor = new CANTalon(REAR_LEFT);
@@ -76,6 +79,7 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
+                arm.run();
 		myRobot.arcadeDrive(stick);
 	}
 
