@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Arm {
     int speedControl;
     
-    double k = .005;
+    double k = .005; //proportionality constant for PID
     
     int upperLimit = 1000;
     int startPID = 800;
@@ -36,7 +36,7 @@ public class Arm {
         enc = new Encoder(DIO1, DIO2);
         
         enc.setDistancePerPulse(1);
-        enc.reset();
+        enc.reset(); //set encoder count to 0
         
         
     }
@@ -74,10 +74,10 @@ public class Arm {
         else if (enc.getDistance() >= upperLimit) {
             armControl.set(0);
         }
-        if (joy.getRawButton(2) && enc.getDistance()>=0){
+        if (joy.getRawButton(2) && enc.getDistance()>=-upperLimit){
             if (enc.getDistance() < -startPID) {
-                double speed = (-upperLimit + enc.getDistance())*k;
-                armControl.set(speed);
+                double speed = (upperLimit + enc.getDistance())*k;
+                armControl.set(-speed);
             }
             else
                 armControl.set(-1);
