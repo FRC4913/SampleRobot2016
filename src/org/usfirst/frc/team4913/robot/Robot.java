@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	//hi
+
 	RobotDrive myRobot;
 	Joystick stick;
 	int autoLoopCounter;
@@ -25,16 +25,17 @@ public class Robot extends IterativeRobot {
 	private static final int REAR_LEFT = 3;
 	private static final int FRONT_RIGHT = 1;
 	private static final int REAR_RIGHT = 2;
-        
-        Arm arm;
+
+	private static final boolean PID_ENABLED = true;
+	Arm arm;
 
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-                arm = new Arm(0, 1, 5);
 		stick = new Joystick(0);
+		arm = new Arm();
 		frontLeftMotor = new CANTalon(FRONT_LEFT);
 		rearLeftMotor = new CANTalon(REAR_LEFT);
 		frontRightMotor = new CANTalon(FRONT_RIGHT);
@@ -80,7 +81,14 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-                arm.run();
+		if (stick.getRawButton(1)){
+			arm.armUp(PID_ENABLED);
+		}
+		else if (stick.getRawButton(0)){
+			arm.armDown(PID_ENABLED);
+		}
+		else
+			arm.armStop();
 		myRobot.arcadeDrive(stick);
 	}
 

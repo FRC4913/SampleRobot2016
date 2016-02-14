@@ -7,7 +7,6 @@
 package org.usfirst.frc.team4913.robot;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -16,85 +15,64 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author michellephan
  */
 public class Arm {
-    int speedControl;
-    
-    double k = .005; //proportionality constant for PID
-    
-    int upperLimit = 1000;
-    int lowerLimit=-1000;//should be negative constant
-    int startPIDUp = 800;
-    int startPIDDown = -800;//should be negative
-    
-    Talon armControl;
-    Encoder enc;
-    
-    Joystick joy;
-    
-    public Arm(int DIO1,int DIO2, int speedControl) {
-        
-        joy = new Joystick(1);
-        
-        armControl = new Talon(speedControl);
-        enc = new Encoder(DIO1, DIO2);
-        
-        enc.setDistancePerPulse(1);
-        enc.reset(); //set encoder count to 0
-        
-        
-    }
-    
-    public void run() {
-        if (joy.getRawButton(1) && enc.getDistance()<upperLimit) {
-            armControl.set(1);
-        }
-        else if (enc.getDistance()>=upperLimit) {
-            armControl.set(0);
-        }
-        if (joy.getRawButton(2) && enc.getDistance()>0) {
-            armControl.set(-1);
-        }
-        else if (enc.getDistance()<=-upperLimit){
-            armControl.set(0);
-        }
-        
-        if (!joy.getRawButton(1) && !joy.getRawButton(2)){
-            armControl.set(0);
-        }
-        print();
-    }
-    
-    public void runPID(){
-        if (joy.getRawButton(1) && enc.getDistance()<upperLimit) {
-            if (enc.getDistance()> startPIDUp) {
-                double speed = (upperLimit-enc.getDistance())* k;
-                armControl.set(speed);
-            }
-            else 
-                armControl.set(1);
-        }
-        
-        else if (enc.getDistance() >= upperLimit) {
-            armControl.set(0);
-        }
-        if (joy.getRawButton(2) && enc.getDistance()>=lowerLimit){
-            if (enc.getDistance() < startPIDDown) {
-                double speed = (-lowerLimit + enc.getDistance())*k;
-                armControl.set(-speed);
-            }
-            else
-                armControl.set(-1);
-        }
-        
-        if (!joy.getRawButton(1) && !joy.getRawButton(2)) {
-            armControl.set(0);
-        }
-        
-    }
-    
-    public void print() {
-        SmartDashboard.putNumber("encoder: ", enc.getDistance());
-        SmartDashboard.putBoolean("direction: ", enc.getDirection());
-        SmartDashboard.putNumber("motor value: ", armControl.get());
-        
-    }
+	private static final int ARM_CHANNEL = 5;
+	private static final int ENC_SOURCE_1 = 0;
+	private static final int ENC_SOURCE_2 = 1;
+	private static final int DISTANCE_PER_PULSE = 1;
+
+	private static final int ENC_UPPER_LIMIT = 1000;
+	private static final int ENC_LOWER_LIMIT = 0;
+	private static final int START_PID_DOWN = 200;
+	private static final int START_PID_UP = 800;
+
+	private Talon armMotor;
+	private Encoder enc;
+
+	private double k = .005; // proportionality constant for PID
+
+	public Arm() {
+		armMotor = new Talon(ARM_CHANNEL);
+		enc = new Encoder(ENC_SOURCE_1, ENC_SOURCE_2);
+		enc.setDistancePerPulse(DISTANCE_PER_PULSE);
+		enc.reset();
+	}
+
+	public void armUp(boolean pidControl) {
+		double distance = enc.getDistance();
+		if (distance > ENC_LOWER_LIMIT) {
+			if (pidControl && distance < START_PID_DOWN) {
+				double speed = distance * k;
+				armMotor.set(-speed);
+			} else
+				armMotor.set(-1);
+		}
+		else
+			armMotor.set(0);
+		print();
+	}
+
+	public void armDown(boolean pidControl) {
+		double distance = enc.getDistance();
+		if (distance < ENC_UPPER_LIMIT) {
+			if (pidControl && distance > START_PID_UP) {
+				double speed = (ENC_UPPER_LIMIT - distance) * k;
+				armMotor.set(speed);
+			} else
+				armMotor.set(1);
+		} else {
+			armMotor.set(0);
+		}
+		print();
+	}
+
+	public void armStop(){
+		armMotor.set(0);
+	}
+
+	private void print() {
+		SmartDashboard.putNumber("encoder: ", enc.getDistance());
+		SmartDashboard.putBoolean("direction: ", enc.getDirection());
+		SmartDashboard.putNumber("motor value: ", armMotor.get());
+
+	}
 }
