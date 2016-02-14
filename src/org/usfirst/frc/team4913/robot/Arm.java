@@ -21,7 +21,9 @@ public class Arm {
     double k = .005; //proportionality constant for PID
     
     int upperLimit = 1000;
-    int startPID = 800;
+    int lowerLimit=-1000;//should be negative constant
+    int startPIDUp = 800;
+    int startPIDDown = -800;//should be negative
     
     Talon armControl;
     Encoder enc;
@@ -63,7 +65,7 @@ public class Arm {
     
     public void runPID(){
         if (joy.getRawButton(1) && enc.getDistance()<upperLimit) {
-            if (enc.getDistance()> startPID) {
+            if (enc.getDistance()> startPIDUp) {
                 double speed = (upperLimit-enc.getDistance())* k;
                 armControl.set(speed);
             }
@@ -74,9 +76,9 @@ public class Arm {
         else if (enc.getDistance() >= upperLimit) {
             armControl.set(0);
         }
-        if (joy.getRawButton(2) && enc.getDistance()>=-upperLimit){
-            if (enc.getDistance() < -startPID) {
-                double speed = (upperLimit + enc.getDistance())*k;
+        if (joy.getRawButton(2) && enc.getDistance()>=lowerLimit){
+            if (enc.getDistance() < startPIDDown) {
+                double speed = (-lowerLimit + enc.getDistance())*k;
                 armControl.set(-speed);
             }
             else
