@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
+ * The Arm subsystem is the pulley mechanism to move the Robot Arm up or down.
  *
  * @author michellephan
  */
@@ -37,6 +38,20 @@ public class Arm {
 		enc.reset();
 	}
 
+	/**
+	 * Move the Robot arm up.
+	 *
+	 * The arm movement is controlled by a Victor motor controller and
+	 * restricted by the encoder and (optionally) the limit switch. The arm will
+	 * stop when the encoder distance is less than {@link #ENC_LOWER_LIMIT} or
+	 * when the up limit switch is set (if added), whichever comes first.
+	 *
+	 * If pidControl is set to true, the arm movement will also slow down
+	 * proportional to the remaining distance.
+	 *
+	 * @param pidControl
+	 *            use PID control to limit the motor speed (boolean)
+	 */
 	public void armUp(boolean pidControl) {
 		double distance = enc.getDistance();
 		if (distance > ENC_LOWER_LIMIT) {
@@ -45,12 +60,25 @@ public class Arm {
 				armMotor.set(-speed);
 			} else
 				armMotor.set(-1);
-		}
-		else
+		} else
 			armMotor.set(0);
 		print();
 	}
 
+	/**
+	 * Move the Robot arm down.
+	 *
+	 * The arm movement is controlled by a Victor motor controller and
+	 * restricted by the encoder and (optionally) the limit switch. The arm will
+	 * stop when the encoder distance is greater than {@link #ENC_UPPER_LIMIT}
+	 * or when the down limit switch is set (if added), whichever comes first.
+	 *
+	 * If pidControl is set to true, the arm movement will also slow down
+	 * proportional to the remaining distance.
+	 *
+	 * @param pidControl
+	 *            use PID control to limit the motor speed (boolean)
+	 */
 	public void armDown(boolean pidControl) {
 		double distance = enc.getDistance();
 		if (distance < ENC_UPPER_LIMIT) {
@@ -65,7 +93,10 @@ public class Arm {
 		print();
 	}
 
-	public void armStop(){
+	/**
+	 * Stop the arm movement by setting motor speed to 0.
+	 */
+	public void armStop() {
 		armMotor.set(0);
 	}
 
