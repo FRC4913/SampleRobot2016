@@ -26,18 +26,17 @@ public class Arm {
 	private static final int UP_SWITCH_SOURCE = 2;
 	private static final int DOWN_SWITCH_SOURCE = 3;
 
-	private static final int ENC_UPPER_LIMIT = 1000;
-	private static final int ENC_LOWER_LIMIT = 0;
-	private static final int START_PID_DOWN = 200;
-	private static final int START_PID_UP = 800;
-
-	private static final double MOTOR_MIN_SPEED = 0.1;
+	private double motorMinSpeed = 0.1;
+	private int encUpperLimit = 1000;
+	private int encLowerLimit = 0;
+	private int startPIDDown = 200;
+	private int startPIDUp = 800;
+	private double k = .005; // proportionality constant for PID
 
 	private Talon armMotor;
 	private Encoder enc;
 	private DigitalInput upSwitch, downSwitch;
 
-	private double k = .005; // proportionality constant for PID
 
 	public Arm() {
 		armMotor = new Talon(ARM_CHANNEL);
@@ -65,10 +64,10 @@ public class Arm {
 	 */
 	public void armUp(boolean pidControl) {
 		double distance = enc.getDistance();
-		if (distance > ENC_LOWER_LIMIT && !upSwitch.get()) {
-			if (pidControl && distance < START_PID_DOWN) {
+		if (distance > encLowerLimit && !upSwitch.get()) {
+			if (pidControl && distance < startPIDDown) {
 				double speed = distance * k;
-				speed = speed > MOTOR_MIN_SPEED ? speed : MOTOR_MIN_SPEED;
+				speed = speed > motorMinSpeed ? speed : motorMinSpeed;
 				armMotor.set(-speed);
 			} else
 				armMotor.set(-1);
@@ -93,10 +92,10 @@ public class Arm {
 	 */
 	public void armDown(boolean pidControl) {
 		double distance = enc.getDistance();
-		if (distance < ENC_UPPER_LIMIT && !downSwitch.get()) {
-			if (pidControl && distance > START_PID_UP) {
-				double speed = (ENC_UPPER_LIMIT - distance) * k;
-				speed = speed > MOTOR_MIN_SPEED ? speed : MOTOR_MIN_SPEED;
+		if (distance < encUpperLimit && !downSwitch.get()) {
+			if (pidControl && distance > startPIDUp) {
+				double speed = (encUpperLimit - distance) * k;
+				speed = speed > motorMinSpeed ? speed : motorMinSpeed;
 				armMotor.set(speed);
 			} else
 				armMotor.set(1);
@@ -119,4 +118,29 @@ public class Arm {
 		SmartDashboard.putNumber("motor value: ", armMotor.get());
 
 	}
+
+	public int getEncUpperLimit() {
+		return encUpperLimit;
+	}
+
+	public void setEncUpperLimit(int encUpperLimit) {
+		this.encUpperLimit = encUpperLimit;
+	}
+
+	public double getK() {
+		return k;
+	}
+
+	public void setK(double k) {
+		this.k = k;
+	}
+
+	public double getMotorMinSpeed() {
+		return motorMinSpeed;
+	}
+
+	public void setMotorMinSpeed(double motorMinSpeed) {
+		this.motorMinSpeed = motorMinSpeed;
+	}
+
 }
