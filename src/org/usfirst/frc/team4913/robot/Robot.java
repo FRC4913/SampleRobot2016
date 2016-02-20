@@ -63,11 +63,17 @@ public class Robot extends IterativeRobot {
 		if (autoLoopCounter < 100) // Check if we've completed 100 loops
 									// (approximately 2 seconds)
 		{
-			myRobot.drive(-0.5, 0.0); // drive forwards half speed
+			myRobot.drive(-0.5, 0.0); // drive forwards half speed through low
+										// bar
 			autoLoopCounter++;
-		} else {
-			myRobot.drive(0.0, 0.0); // stop robot
-		}
+		} else if (autoLoopCounter > 100 && autoLoopCounter < 150) {
+			myRobot.drive(-.5, -.5); // pivot to ninety degrees
+			autoLoopCounter++;
+		} else if (autoLoopCounter > 150 && autoLoopCounter < 200) {
+			myRobot.drive(-.5, 0); // drive forward, push ball into low goal
+			autoLoopCounter++;
+		} else
+			myRobot.drive(0, 0);
 	}
 
 	/**
@@ -81,13 +87,11 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-		if (stick.getRawButton(1)){
+		if (stick.getRawButton(1)) {
 			arm.armUp(PID_ENABLED);
-		}
-		else if (stick.getRawButton(0)){
+		} else if (stick.getRawButton(0)) {
 			arm.armDown(PID_ENABLED);
-		}
-		else
+		} else
 			arm.armStop();
 		myRobot.arcadeDrive(stick);
 	}
