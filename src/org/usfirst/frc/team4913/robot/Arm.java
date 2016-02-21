@@ -6,6 +6,7 @@
 
 package org.usfirst.frc.team4913.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +22,10 @@ public class Arm {
 	private static final int ENC_SOURCE_2 = 1;
 	private static final int DISTANCE_PER_PULSE = 1;
 
+	// Limit Switches
+	private static final int UP_SWITCH_SOURCE = 2;
+	private static final int DOWN_SWITCH_SOURCE = 3;
+
 	private static final int ENC_UPPER_LIMIT = 1000;
 	private static final int ENC_LOWER_LIMIT = 0;
 	private static final int START_PID_DOWN = 200;
@@ -28,11 +33,15 @@ public class Arm {
 
 	private Talon armMotor;
 	private Encoder enc;
+	private DigitalInput upSwitch, downSwitch;
 
 	private double k = .005; // proportionality constant for PID
 
 	public Arm() {
 		armMotor = new Talon(ARM_CHANNEL);
+		upSwitch = new DigitalInput(UP_SWITCH_SOURCE);
+		downSwitch = new DigitalInput(DOWN_SWITCH_SOURCE);
+
 		enc = new Encoder(ENC_SOURCE_1, ENC_SOURCE_2);
 		enc.setDistancePerPulse(DISTANCE_PER_PULSE);
 		enc.reset();
@@ -54,7 +63,7 @@ public class Arm {
 	 */
 	public void armUp(boolean pidControl) {
 		double distance = enc.getDistance();
-		if (distance > ENC_LOWER_LIMIT) {
+		if (distance > ENC_LOWER_LIMIT && !upSwitch.get()) {
 			if (pidControl && distance < START_PID_DOWN) {
 				double speed = distance * k;
 				armMotor.set(-speed);
@@ -81,7 +90,7 @@ public class Arm {
 	 */
 	public void armDown(boolean pidControl) {
 		double distance = enc.getDistance();
-		if (distance < ENC_UPPER_LIMIT) {
+		if (distance < ENC_UPPER_LIMIT && !downSwitch.get()) {
 			if (pidControl && distance > START_PID_UP) {
 				double speed = (ENC_UPPER_LIMIT - distance) * k;
 				armMotor.set(speed);
