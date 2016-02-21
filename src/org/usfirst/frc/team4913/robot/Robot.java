@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -22,6 +23,8 @@ public class Robot extends IterativeRobot {
 	int autoLoopCounter;
 	CANTalon frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor;
 	CameraServer server;
+
+	private static final int STRAFE_SECONDS = 3;
 
 	private static final int FRONT_LEFT = 4;
 	private static final int REAR_LEFT = 3;
@@ -49,9 +52,9 @@ public class Robot extends IterativeRobot {
 		rearLeftMotor.set(FRONT_LEFT);
 		rearRightMotor.set(FRONT_RIGHT);
 
-        server = CameraServer.getInstance();
-        server.setQuality(CAMERA_QUALITY);
-        server.startAutomaticCapture("cam0");
+		server = CameraServer.getInstance();
+		server.setQuality(CAMERA_QUALITY);
+		server.startAutomaticCapture("cam0");
 
 		myRobot = new RobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 	}
@@ -88,14 +91,46 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-		if (stick.getRawButton(1)){
+		if (stick.getRawButton(1)) {
 			arm.armUp(PID_ENABLED);
-		}
-		else if (stick.getRawButton(0)){
+		} else if (stick.getRawButton(0)) {
 			arm.armDown(PID_ENABLED);
-		}
-		else
+		} else {
 			arm.armStop();
+		}
+
+		boolean strafeRight = false;
+		if (stick.getRawButton(4)) {
+			strafeRight = !strafeRight;
+
+			for (int i = 0; i < STRAFE_SECONDS; i++) {
+				myRobot.drive(.5, .5); // rotate right for constant sec
+			}
+			while (strafeRight) {
+				myRobot.drive(.5, 0); // drive forward
+				if (stick.getRawButton(4)) {
+					strafeRight = !strafeRight;
+				}
+			}
+
+			for (int i = 0; i < STRAFE_SECONDS; i++) {
+				myRobot.drive(.5, -.5);
+			} // rotate left for constant sec
+
+			myRobot.drive(0, 0);
+
+		}
+		if (stick.getRawButton(5)) {
+			myRobot.drive(.5, -.5);
+			Timer.delay(STRAFE_SECONDS); // rotate left for constant sec
+			while (stick.getRawButton(4)) {
+				myRobot.drive(.5, 0); // drive forward
+
+			}
+			myRobot.drive(.5, .5);
+			Timer.delay(STRAFE_SECONDS);// rotate right for constant sec
+
+		}
 		myRobot.arcadeDrive(stick);
 	}
 
