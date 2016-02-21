@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4913.robot;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -20,11 +21,13 @@ public class Robot extends IterativeRobot {
 	Joystick stick;
 	int autoLoopCounter;
 	CANTalon frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor;
+	CameraServer server;
 
 	private static final int FRONT_LEFT = 4;
 	private static final int REAR_LEFT = 3;
 	private static final int FRONT_RIGHT = 1;
 	private static final int REAR_RIGHT = 2;
+	private static final int CAMERA_QUALITY = 50; // can be set to 0 - 100
 
 	private static final boolean PID_ENABLED = true;
 	Arm arm;
@@ -45,6 +48,10 @@ public class Robot extends IterativeRobot {
 		rearRightMotor.changeControlMode(TalonControlMode.Follower);
 		rearLeftMotor.set(FRONT_LEFT);
 		rearRightMotor.set(FRONT_RIGHT);
+
+        server = CameraServer.getInstance();
+        server.setQuality(CAMERA_QUALITY);
+        server.startAutomaticCapture("cam0");
 
 		myRobot = new RobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 	}
